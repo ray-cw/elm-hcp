@@ -50,7 +50,7 @@ infopanel id cs = case cs of
                                       |> filled black
                                       |> move (0,115)
                                   ,sliders (r,g,b) id]
-                  Nothing -> rect 300 500 |> filled grey
+                  Nothing -> group [rect 300 500 |> filled grey]
 
 currentColorText (r,g,b) = "Current RGB: (" ++ String.fromInt r ++ "," ++ String.fromInt g ++ "," ++ String.fromInt b ++ ")"
 

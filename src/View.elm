@@ -7,6 +7,10 @@ import Dict exposing (Dict)
 import Model exposing (..)
 import Update exposing (..)
 
+-- Modification to the text to make it more readable for me lol --
+
+text a = GraphicSVG.text a |> sansserif |> size 11.5
+
 -- MAIN FUNCTION --
 
 main =
@@ -19,14 +23,37 @@ main =
 
 -- VIEW --
 
-view model =
-    collage 800 500 [ renderSections model.sections |> move (-150,0) -- See
-                    , infopanel model.currentShape (Dict.get model.currentShape model.sections) |> move (250,0)
-                    , submitButton |> notifyTap CheckAnswer |> move (250,-120)
-                    , rect 800 500 |> outlined (solid 8) black]
-
-submitButton = group [rect 100 50 |> filled black
-                     ,GraphicSVG.text "Submit" |> centered |> filled white] 
+view model = case model.mode of
+              InstructionScreen ->
+                          collage 800 500 [ renderSections model.sections |> move (-150,0)
+                                          , infopanel model.currentShape (Dict.get model.currentShape model.sections) |> move (250,0)
+                                          , rect 800 500 |> outlined (solid 8) black
+                                          , rect 400 250 |> filled (rgba 0 0 0 0.6)
+                                          , text "Please read all the instructions before starting." 
+                                                 |> bold
+                                                 |> filled white                                                 
+                                                 |> move (-190,100)
+                                          , text "Your goal: adjust the colours of the shapes on the left side of the screen to" 
+                                                 |> filled white
+                                                 |> move (-190,80)
+                                          , text "match the hexcodes provided on the panel on the right side of the screen." 
+                                                 |> filled white
+                                                 |> move (-190,65)
+                                          , text "Select a shape by tapping on it. Adjust colors using the sliders that pop-up." 
+                                                 |> filled white
+                                                 |> move (-190,45)
+                                          , text "Click anywhere to start." 
+                                                 |> filled white
+                                                 |> move (-190,0)
+                                          , rect 800 500 |> filled (rgba 0 0 0 0) |> notifyTap StartGame]
+              GameScreen -> collage 800 500 [ renderSections model.sections |> move (-150,0)
+                                            , infopanel model.currentShape (Dict.get model.currentShape model.sections) |> move (250,0)
+                                            , rect 800 500 |> outlined (solid 8) black]
+              VictoryScreen -> collage 800 500 [ text "You did it yay" 
+                                                     |> filled black
+                                                     |> move (0,20)
+                                              , text "Click anywhere to restart." |> filled black
+                                              , rect 800 500 |> filled (rgba 0 0 0 0) |> notifyTap Reset]
 
 infopanel id cs = case cs of
                   Just a -> let (r1,g1,b1) = a.colour
@@ -45,18 +72,35 @@ infopanel id cs = case cs of
                                       |> filled (rgb r g b)
                                       |> addOutline (solid 2) black
                                       |> move (0,150)
-                                  ,GraphicSVG.text (currentColorText (r1,g1,b1))
+                                  ,text (currentColorText (r1,g1,b1))
                                       |> centered
                                       |> filled black
                                       |> move (0,115)
-                                  ,sliders (r,g,b) id]
-                  Nothing -> group [rect 300 500 |> filled grey]
+                                  , sliders (r,g,b) id a.resultString
+                                  , submitButton a.resultString |> move (0,-120) |> notifyTap CheckAnswer]
+                  Nothing -> instructionScreen
+
+submitButton s = if s /= Just "Correct! Keep at it!" then
+                  group [rect 60 30 |> filled white |> addOutline (solid 1) red
+                        , text "Submit" |> sansserif |>  centered |> filled red |> move (0,-4)
+                        , showResultString s |> move (0,-40)] 
+                 else group [showResultString s |> move (0,-40)]
+
+instructionScreen: Shape Mesg
+instructionScreen = group [rect 300 500 |> filled grey]
 
 currentColorText (r,g,b) = "Current RGB: (" ++ String.fromInt r ++ "," ++ String.fromInt g ++ "," ++ String.fromInt b ++ ")"
 
-sliders (r,g,b) id = group [ slider Red r id,
-                             slider Green g id |> move (0,-35),
-                             slider Blue b id |> move (0,-70)]
+showResultString: Maybe String -> Shape Mesg
+showResultString s = case s of
+                        Just a -> text a |> centered |> filled black
+                        Nothing -> group[]
+
+sliders (r,g,b) id s = if s /= Just "Correct! Keep at it!" then
+                            group [ slider Red r id,
+                                    slider Green g id |> move (0,-35),
+                                    slider Blue b id |> move (0,-70)]
+                       else group []
 
 slider: ColorValue -> Float -> Int -> Shape Mesg
 slider c v id = let (darkclr, clr) = case c of 
@@ -71,11 +115,13 @@ slider c v id = let (darkclr, clr) = case c of
                          |> notifyTouchStart(Increase c id)
                          |> notifyMouseUp ReleaseButton
                          |> notifyTouchEnd ReleaseButton
+                         |> notifyLeave ReleaseButton
                      , minusButton darkclr clr |> move (-120,0)
                          |> notifyMouseDown (Decrease c id)
                          |> notifyTouchStart (Decrease c id)
                          |> notifyMouseUp ReleaseButton
-                         |> notifyTouchEnd ReleaseButton]
+                         |> notifyTouchEnd ReleaseButton
+                         |> notifyLeave ReleaseButton]
 
 
 plusButton darkclr clr = group [square 20 |> filled clr |> addOutline (solid 1) darkclr,

@@ -28,12 +28,12 @@ view model = case model.mode of
                           collage 800 500 [ renderSections model.sections |> move (-150,0)
                                           , infopanel model.currentShape (Dict.get model.currentShape model.sections) |> move (250,0)
                                           , rect 800 500 |> outlined (solid 8) black
-                                          , rect 400 250 |> filled (rgba 0 0 0 0.6)
+                                          , rect 400 250 |> filled (rgba 0 0 0 0.75)
                                           , text "Please read all the instructions before starting." 
                                                  |> bold
                                                  |> filled white                                                 
                                                  |> move (-190,100)
-                                          , text "Your goal: adjust the colours of the shapes on the left side of the screen to" 
+                                          , text "Your goal: adjust the colors of the shapes on the left side of the screen to" 
                                                  |> filled white
                                                  |> move (-190,80)
                                           , text "match the hexcodes provided on the panel on the right side of the screen." 
@@ -42,12 +42,22 @@ view model = case model.mode of
                                           , text "Select a shape by tapping on it. Adjust colors using the sliders that pop-up." 
                                                  |> filled white
                                                  |> move (-190,45)
-                                          , text "Click anywhere to start." 
+                                          , text "You can hold down the slider buttons to go faster!" 
+                                                 |> filled white
+                                                 |> move (-190,30)
+                                          , text "Remember in hex: A = 10, B = 11, C = 12, D = 13, E = 14, and F = 15." 
                                                  |> filled white
                                                  |> move (-190,0)
+                                          , text "Examples: FF = 15 * 16 + 15 = 255, AD = 10 * 16 + 13 = 173" 
+                                                 |> filled white
+                                                 |> move (-190,-45)
+                                          , text "Click anywhere to start." 
+                                                 |> filled white
+                                                 |> move (-190,-90)
                                           , rect 800 500 |> filled (rgba 0 0 0 0) |> notifyTap StartGame]
               GameScreen -> collage 800 500 [ renderSections model.sections |> move (-150,0)
                                             , infopanel model.currentShape (Dict.get model.currentShape model.sections) |> move (250,0)
+                                            , questionButton |> move (380,230) |> notifyTap OpenInstructions
                                             , rect 800 500 |> outlined (solid 8) black]
               VictoryScreen -> collage 800 500 [ text "You did it yay" 
                                                      |> filled black
@@ -79,6 +89,10 @@ infopanel id cs = case cs of
                                   , sliders (r,g,b) id a.resultString
                                   , submitButton a.resultString |> move (0,-120) |> notifyTap CheckAnswer]
                   Nothing -> instructionScreen
+
+questionButton = group [ square 20 |> filled (rgb 30 30 30) |> addOutline (solid 2) black,
+                         text "Click this for help >>" |> size 10 |> filled black |> move (-105,-4),
+                         text "?" |> centered |> filled white |> move (0,-4)]
 
 submitButton s = if s /= Just "Correct! Keep at it!" then
                   group [rect 60 30 |> filled white |> addOutline (solid 1) red

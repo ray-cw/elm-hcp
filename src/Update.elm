@@ -16,6 +16,7 @@ update msg model =
                            Nothing -> model
            else {model | timeActive = model.timeActive + 0.1}
         StartGame -> {model | mode = GameScreen}
+        OpenInstructions -> {model | mode = InstructionScreen}
         UpdateCurrentShape id -> {model | currentShape = id}
         Increase c id -> { model | sections = Dict.update id (increaseWithDefault c) model.sections, activeSlider = Just (id,Inc,c)}
         Decrease c id -> { model | sections = Dict.update id (decreaseWithDefault c) model.sections, activeSlider = Just (id,Dec,c)}

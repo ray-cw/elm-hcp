@@ -18,6 +18,7 @@ type Mesg -- I'm avoiding using 'Msg' because GraphicSVG exposes it.
     | ReleaseButton
     | CheckAnswer
     | StartGame
+    | OpenInstructions
     | Reset
 
 type Mode = Inc | Dec
@@ -68,14 +69,19 @@ sections = Dict.fromList
 --}
 
 
+
 -- Testing version --
 sections : Dict Int Section
 sections = Dict.fromList
-           [ (0, {title = "Sky", colour = base, target = base, shapes = sky, resultString = Nothing})
-           , (1, {title = "Left Hill", colour = base, target = base, shapes = lefthill, resultString = Nothing})
-           , (2, {title = "Right Hill", colour = base, target = base, shapes = righthill, resultString = Nothing})
+           [ (0, {title = "Sky", colour = (205,234,241), target = (205,234,241), shapes = sky, resultString = Nothing})
+           , (1, {title = "Left Hill", colour = (152,206,130), target = (152,206,130), shapes = lefthill, resultString = Nothing})
+           , (2, {title = "Right Hill", colour = (202,255,183), target = (202,255,183), shapes = righthill, resultString = Nothing})
            , (3, {title = "Cloud", colour = base, target = base, shapes = cloud, resultString = Nothing})
-           , (4, {title = "Sun", colour = base, target = base, shapes = sun, resultString = Nothing})]
+           , (4, {title = "Sun", colour = (244,242,133), target = (244,242,133), shapes = sun, resultString = Nothing})]
+
+
+
+
 
 sun c  = group [circle 50 
                   |> filled c

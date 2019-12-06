@@ -3,7 +3,7 @@ module Update exposing (..)
 import Model exposing (..)
 import Dict exposing (Dict)
 
-update: Mesg -> Model -> Model
+update: Msg -> Model -> Model
 update msg model =
     case msg of
         Tick t ( _, _, _ ) ->

@@ -10,7 +10,7 @@ base: (Int,Int,Int)
 base = (255,255,255) -- starting colour is white
 
 
-type Mesg -- I'm avoiding using 'Msg' because GraphicSVG exposes it.
+type Msg
     = Tick Float GetKeyState 
     | UpdateCurrentShape Int
     | Increase ColorValue Int 
@@ -30,7 +30,7 @@ type Screen = InstructionScreen | GameScreen | VictoryScreen
 type alias Section = { title: String
                      , colour: (Int, Int, Int)
                      , target: (Int, Int, Int)
-                     , shapes: Color -> Shape Mesg
+                     , shapes: Color -> Shape Msg
                      , resultString: Maybe String}
 
 type alias Scorecard = { nOT : Int -- Number of Trials
@@ -104,3 +104,4 @@ cloud c = curve (0,0) [Pull (-22,60) (-76,19), Pull (-156,72) (-128,3), Pull (-1
                    |> move (-50,180)
 
 sky c = square 1000 |> filled c
+
